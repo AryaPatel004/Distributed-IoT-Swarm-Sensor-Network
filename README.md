@@ -1,4 +1,4 @@
-# 🔴 Code RED! — IoT Swarm Light Intensity Monitor
+# Distributed IOT Swarm Sensor Network
 
 An IoT swarm system built with **Raspberry Pi 5** and **3× ESP32** units that compete in real-time to become the "Master" based on ambient light intensity. The system features live web visualization via Node-RED and physical feedback through LEDs and an 8×8 LED matrix.
 
@@ -53,20 +53,7 @@ An IoT swarm system built with **Raspberry Pi 5** and **3× ESP32** units that c
 ## 🧠 State Machine (Raspberry Pi)
 
 ```
-[Initialization]
-      │  Setup GPIO, SPI, UDP Socket
-      │  Broadcast DEFINE_SERVER_LOGGER_PACKET
-      ▼
-[Listening State]  ◄─────────────────────────┐
-      │                                       │
-      ├─ Packet Rx ──► Parse & update LEDs/Matrix
-      ├─ Timer > 1s ──► HTTP POST to Node-RED  │
-      └─ Button Press ──► [Reset State] ────────┘
-                              │
-                         Save log to disk
-                         Clear graph_data
-                         Broadcast RESET_SWARM_PACKET
-                         Yellow LED on (3s)
+![State Machine Diagram](docs/state_machine.png)
 ```
 
 ---
@@ -166,13 +153,6 @@ Log generated at: 2025-12-02_12-27-16
 
 ---
 
-## 📹 Demo Video
-
-[▶ Watch on Google Drive](https://drive.google.com/drive/folders/1P8haduXQQ_GaTbtp47U4z8oKLWKdsjlN?usp=sharing)
-
----
-
 ## 👤 Author
 
 **Arya Sureshbhai Patel**  
-ECPS 216 — IoT Systems and Software, UCI
