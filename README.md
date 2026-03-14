@@ -52,9 +52,7 @@ An IoT swarm system built with **Raspberry Pi 5** and **3× ESP32** units that c
 
 ## 🧠 State Machine (Raspberry Pi)
 
-```
 ![State Machine Diagram](docs/state_machine.png)
-```
 
 ---
 
@@ -80,7 +78,6 @@ code-red-iot/
 │   ├── schematic.pdf            # Circuit schematic (EasyEDA export)
 │   ├── physical_photo.jpg        # Physical circuit photo
 │
-├── .gitignore
 └── README.md
 ```
 
