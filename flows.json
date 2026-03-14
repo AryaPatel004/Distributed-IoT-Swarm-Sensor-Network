@@ -1,0 +1,272 @@
+[
+    {
+        "id": "tab_assignment",
+        "type": "tab",
+        "label": "LightSwarm Dashboard",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "http_light_in",
+        "type": "http in",
+        "z": "tab_assignment",
+        "name": "POST /light_data",
+        "url": "/light_data",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 120,
+        "wires": [
+            [
+                "func_process_light",
+                "http_response_light"
+            ]
+        ]
+    },
+    {
+        "id": "func_process_light",
+        "type": "function",
+        "z": "tab_assignment",
+        "name": "Format Light Data",
+        "func": "var rawData = msg.payload.data;\nvar map = {};\n\n// --- HARDCODED CONFIGURATION ---\nvar IP_COLOR_MAP = {\n    \"192.168.0.169\": \"#FF0000\", // Red\n    \"192.168.0.88\":  \"#008000\", // Green\n    \"192.168.0.220\": \"#0000FF\"  // Blue\n};\nvar DEFAULT_COLOR = \"#000000\"; // Black for unknown IPs\n// -------------------------------\n\n// 1. Group incoming data by IP\nrawData.forEach(function(d) {\n    if (!map[d.ip]) {\n        map[d.ip] = [];\n    }\n    map[d.ip].push({ x: d.x, y: d.y });\n});\n\nvar outSeries = [];\nvar outData = [];\nvar outColors = [];\n\nvar activeIPs = Object.keys(map).sort();\n\n// 2. Build arrays\nactiveIPs.forEach(function(ip){\n    outSeries.push(ip);\n    outData.push(map[ip]);\n    outColors.push(IP_COLOR_MAP[ip] || DEFAULT_COLOR);\n});\n\nmsg.payload = [{\n    series: outSeries,\n    data:   outData,\n    labels: [\"Light\"]\n}];\n\n// 3. FORCE colors for each series\nmsg.ui_control = {\n    colors: outColors\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 160,
+        "wires": [
+            [
+                "chart_light_trace"
+            ]
+        ]
+    },
+    {
+        "id": "chart_light_trace",
+        "type": "ui_chart",
+        "z": "tab_assignment",
+        "name": "Photocell Data Trace",
+        "group": "group_graphs",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "label": "Photocell Data Trace (30s)",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "4500",
+        "removeOlder": "30",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "1",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#ffbb78",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 660,
+        "y": 160,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "http_duration_in",
+        "type": "http in",
+        "z": "tab_assignment",
+        "name": "POST /master_duration",
+        "url": "/master_duration",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 260,
+        "wires": [
+            [
+                "func_process_duration",
+                "http_response_duration"
+            ]
+        ]
+    },
+    {
+        "id": "func_process_duration",
+        "type": "function",
+        "z": "tab_assignment",
+        "name": "Format Bar Data",
+        "func": "var rawData = msg.payload.data;\nvar map = {};\n\n// --- HARDCODED CONFIGURATION ---\nvar IP_COLOR_MAP = {\n    \"192.168.0.169\": \"#FF0000\", // Red\n    \"192.168.0.88\":  \"#008000\", // Green\n    \"192.168.0.220\": \"#0000FF\"  // Blue\n};\nvar DEFAULT_COLOR = \"#000000\"; \n// -------------------------------\n\n// 1. Group by IP\nrawData.forEach(function(d){\n    map[d.ip] = d.duration;\n});\n\nvar activeIPs = Object.keys(map).sort();\n\nvar outSeries = [];\nvar outData = [];\nvar outColors = [];\n\n// 2. Build Arrays\nactiveIPs.forEach(function(ip){\n    outSeries.push(ip);        // Series name = IP\n    outData.push([map[ip]]);   // One value per IP (one label: \"Duration\")\n\n    // Assign correct color\n    outColors.push(IP_COLOR_MAP[ip] || DEFAULT_COLOR);\n});\n\nmsg.payload = [{\n    series: outSeries,\n    data:   outData,\n    labels: [\"Duration\"]\n}];\n\n// 3. FORCE the colors for each series\nmsg.ui_control = {\n    colors: outColors\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 300,
+        "wires": [
+            [
+                "chart_master_duration"
+            ]
+        ]
+    },
+    {
+        "id": "chart_master_duration",
+        "type": "ui_chart",
+        "z": "tab_assignment",
+        "name": "Master Durations",
+        "group": "group_graphs",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "label": "Master Device Duration (sec)",
+        "chartType": "bar",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#ffbb78",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 650,
+        "y": 300,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "http_reset_in",
+        "type": "http in",
+        "z": "tab_assignment",
+        "name": "POST /reset",
+        "url": "/reset",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 420,
+        "wires": [
+            [
+                "func_reset_graphs",
+                "http_response_reset"
+            ]
+        ]
+    },
+    {
+        "id": "func_reset_graphs",
+        "type": "function",
+        "z": "tab_assignment",
+        "name": "Clear Data",
+        "func": "// Send empty array to clear charts\nmsg.payload = [];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 390,
+        "y": 460,
+        "wires": [
+            [
+                "chart_light_trace",
+                "chart_master_duration"
+            ]
+        ]
+    },
+    {
+        "id": "http_response_reset",
+        "type": "http response",
+        "z": "tab_assignment",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 390,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "http_response_duration",
+        "type": "http response",
+        "z": "tab_assignment",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 390,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "http_response_light",
+        "type": "http response",
+        "z": "tab_assignment",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 390,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "group_graphs",
+        "type": "ui_group",
+        "z": "tab_assignment",
+        "name": "Live Swarm Data",
+        "tab": "tab_home",
+        "order": 1,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "tab_home",
+        "type": "ui_tab",
+        "z": "tab_assignment",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "3fbd34672c4a70ba",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-dashboard": "3.6.6"
+        }
+    }
+]
