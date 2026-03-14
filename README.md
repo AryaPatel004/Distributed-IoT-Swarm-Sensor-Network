@@ -64,12 +64,10 @@ An IoT swarm system built with **Raspberry Pi 5** and **3× ESP32** units that c
 code-red-iot/
 │
 ├── raspberry_pi/
-│   ├── main.py                  # Main RPi script (UDP listener, LED control, logging)
-│   ├── matrix_driver.py         # MAX7219 LED matrix display logic (luma.led_matrix)
-│   └── node_red_client.py       # HTTP POST integration with Node-RED
+│   ├── Code_Red.py              # Main RPi script (UDP listener, LED control, logging)
 │
 ├── esp32/
-│   ├── esp32_main.ino           # Main Arduino sketch (shared across all 3 units)
+│   ├── Code_Red.ino             # Main Arduino sketch (shared across all 3 units)
 │   └── config.h                 # Per-device config (Device ID, WiFi credentials)
 │
 ├── node_red/
@@ -79,9 +77,8 @@ code-red-iot/
 │   └── sample_log.txt           # Example log output
 │
 ├── docs/
-│   ├── schematic.png            # Circuit schematic (EasyEDA export)
-│   ├── circuit_photo.jpg        # Physical circuit photo
-│   └── dashboard_screenshot.png # Node-RED dashboard screenshot
+│   ├── schematic.pdf            # Circuit schematic (EasyEDA export)
+│   ├── physical_photo.jpg        # Physical circuit photo
 │
 ├── .gitignore
 └── README.md
